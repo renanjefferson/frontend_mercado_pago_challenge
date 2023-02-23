@@ -17,7 +17,7 @@ export const Title = styled.h2`
 `;
 
 export const Form = styled.form`
-  & button {
+  & button[type='submit'] {
     background-color: var(--primary-color);
     color: var(--color-greys-100);
     font-size: 1rem;
@@ -46,6 +46,18 @@ export const Fields = styled.div`
 `;
 
 export const Box = styled.div``;
+export const Flex = styled.div`
+  align-items: center;
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+`;
+
+export const ContainerExpirationDate = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
 
 export const Label = styled.label`
   display: block;
@@ -54,4 +66,15 @@ export const Label = styled.label`
   font-weight: var(--font-weight-regular);
   margin-bottom: 0.25rem;
   word-break: break-word;
+`;
+
+export const ChangePaymentMethod = styled.div`
+  margin: 2rem 0;
+  border-top: 1px solid var(--color-greys-400);
+
+  & button {
+    color: var(--primary-color);
+    font-size: 1rem;
+    font-weight: var(--font-weight-bold);
+  }
 `;

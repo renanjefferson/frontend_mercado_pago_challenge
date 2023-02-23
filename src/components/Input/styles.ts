@@ -26,12 +26,17 @@ export const Input = styled.input<InputProps>`
 `;
 
 export const ErrorMessage = styled.p`
+  align-items: center;
   color: var(--error-color);
-  display: inline-block;
+  display: flex;
   font-size: 0.81rem;
   font-weight: var(--font-weight-semibold);
-  margin: 0;
+  margin: 0.2rem 0;
   max-width: 100%;
   padding-left: 4px;
   word-break: break-word;
+
+  & svg {
+    margin-right: 0.2rem;
+  }
 `;

@@ -6,24 +6,40 @@ import Button from '../Button';
 import Input from '../Input';
 import * as S from './styles';
 
+interface CardFormProps {
+  paymentMethod: (method: string) => void;
+}
+
 interface CardFormInputs {
   cardNumber: string;
-  expirationDate: string;
+  cardExpirationMonth: number;
+  cardExpirationYear: number;
   securityCode: number;
   cardholderName: string;
   docNumber: string;
-  cardholderEmail: string;
+  email: string;
 }
+
 const schema = yup.object().shape({
   cardNumber: yup.string().required('Caracteres de número de cartão inválidos'),
-  expirationDate: yup.string().required('Caracteres de data inválidos'),
-  securityCode: yup.string().required('Caracteres de CVV inválidos'),
+  cardExpirationMonth: yup
+    .string()
+    .required('Mês obrigatório')
+    .matches(/^[0-9]{2}$/, 'O mês não é válido'),
+  cardExpirationYear: yup
+    .string()
+    .required('Ano obrigatório')
+    .matches(/^[0-9]{2}$/, 'O ano não é válido'),
+  securityCode: yup
+    .string()
+    .required('CVV obrigatório')
+    .matches(/^[0-9]{3,4}$/, 'O CVV não é válido'),
   cardholderName: yup.string().required('Dado obrigatório'),
   docNumber: yup.string().required('Dado obrigatório'),
-  cardholderEmail: yup.string().required('Dado obrigatório'),
+  email: yup.string().required('Dado obrigatório'),
 });
 
-const CardForm: React.FC = () => {
+const CardForm: React.FC<CardFormProps> = ({ paymentMethod }) => {
   const {
     register,
     handleSubmit,
@@ -43,43 +59,50 @@ const CardForm: React.FC = () => {
   return (
     <S.Container>
       <S.Form onSubmit={handleSubmit(onSubmit)}>
-        <S.Title>Cartão de crédito ou débito</S.Title>
+        <S.Title>Cartão de crédito</S.Title>
         <S.Wide>
           <S.Label htmlFor="cardNumber">Número do cartão</S.Label>
           <Input
             id="cardNumber"
-            isFullWidth
             placeholder="1234 1234 1234 1234"
-            maxLength={25}
-            autoComplete="off"
-            inputMode="numeric"
+            data-checkout="cardNumber"
+            isFullWidth
             {...register('cardNumber')}
             error={errors.cardNumber}
           />
         </S.Wide>
         <S.Fields>
-          <S.Box>
-            <S.Label htmlFor="expirationDate">Data de vencimento</S.Label>
-            <Input
-              id="expirationDate"
-              isFullWidth
-              placeholder="mm/aaaa"
-              maxLength={7}
-              autoComplete="off"
-              inputMode="numeric"
-              {...register('expirationDate')}
-              error={errors.expirationDate}
-            />
-          </S.Box>
+          <S.Flex>
+            <S.Box>
+              <S.Label htmlFor="cardExpirationMonth">Mês</S.Label>
+              <Input
+                id="cardExpirationMonth"
+                placeholder="MM"
+                data-checkout="cardExpirationMonth"
+                isFullWidth
+                {...register('cardExpirationMonth')}
+                error={errors.cardExpirationMonth}
+              />
+            </S.Box>
+            <S.Box>
+              <S.Label htmlFor="cardExpirationYear">Ano</S.Label>
+              <Input
+                id="cardExpirationYear"
+                placeholder="AA"
+                data-checkout="cardExpirationYear"
+                isFullWidth
+                {...register('cardExpirationYear')}
+                error={errors.cardExpirationYear}
+              />
+            </S.Box>
+          </S.Flex>
           <S.Box>
             <S.Label htmlFor="securityCode">Código de segurança</S.Label>
             <Input
               id="securityCode"
-              isFullWidth
               placeholder="123"
-              maxLength={4}
-              autoComplete="off"
-              inputMode="numeric"
+              data-checkout="securityCode"
+              isFullWidth
               {...register('securityCode')}
               error={errors.securityCode}
             />
@@ -91,8 +114,9 @@ const CardForm: React.FC = () => {
           </S.Label>
           <Input
             id="cardholderName"
-            isFullWidth
             placeholder="RENAN J R SILVA"
+            data-checkout="cardholderName"
+            isFullWidth
             {...register('cardholderName')}
             error={errors.cardholderName}
           />
@@ -101,24 +125,30 @@ const CardForm: React.FC = () => {
           <S.Label htmlFor="docNumber">CPF</S.Label>
           <Input
             id="docNumber"
-            isFullWidth
             placeholder="999.999.999-99"
+            data-checkout="docNumber"
+            isFullWidth
             {...register('docNumber')}
             error={errors.docNumber}
           />
         </S.Wide>
         <S.Wide>
-          <S.Label htmlFor="cardholderEmail">E-mail</S.Label>
+          <S.Label htmlFor="email">E-mail</S.Label>
           <Input
             type={'email'}
-            id="cardholderEmail"
+            id="email"
             isFullWidth
             placeholder="exemplo@email.com"
-            {...register('cardholderEmail')}
-            error={errors.cardholderEmail}
+            {...register('email')}
+            error={errors.email}
           />
         </S.Wide>
-        <Button>
+        <S.ChangePaymentMethod>
+          <Button isFullWidth onClick={() => paymentMethod('payment-method')}>
+            <span>Alterar forma de pagamento</span>
+          </Button>
+        </S.ChangePaymentMethod>
+        <Button isFullWidth type="submit">
           <FiLock />
           <span>Pagar R$50</span>
         </Button>

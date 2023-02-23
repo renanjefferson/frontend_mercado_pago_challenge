@@ -17,11 +17,11 @@ const Button: React.FC<ButtonProps> = forwardRef<
   ButtonProps
 >(
   (
-    { children, isFullWidth = false }: ButtonProps,
+    { children, isFullWidth = false, ...props }: ButtonProps,
     ref: Ref<HTMLButtonElement>
   ) => {
     return (
-      <S.Button ref={ref} isFullWidth={isFullWidth}>
+      <S.Button ref={ref} isFullWidth={isFullWidth} {...props}>
         {children}
       </S.Button>
     );

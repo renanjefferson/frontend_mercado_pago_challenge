@@ -1,4 +1,5 @@
 import { forwardRef, InputHTMLAttributes, Ref } from 'react';
+import { FiAlertCircle } from 'react-icons/fi';
 import { FieldError } from 'react-hook-form';
 import * as S from './styles';
 
@@ -25,7 +26,10 @@ const Input: React.FC<InputProps> = forwardRef<HTMLInputElement, InputProps>(
           />
         </S.Container>
         {!!error && (
-          <S.ErrorMessage role="alert">{error.message}</S.ErrorMessage>
+          <S.ErrorMessage role="alert">
+            <FiAlertCircle size={13} />
+            {error.message}
+          </S.ErrorMessage>
         )}
       </>
     );
