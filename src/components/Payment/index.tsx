@@ -4,21 +4,21 @@ import Button from '../Button';
 import * as S from './styles';
 
 interface PaymentProps {
-  paymentMethod: (method: string) => void;
+  paymentType: (type: string) => void;
 }
 
-const Payment: React.FC<PaymentProps> = ({ paymentMethod }) => {
+const Payment: React.FC<PaymentProps> = ({ paymentType }) => {
   return (
     <S.Container>
       <S.Title>Como você deseja pagar?</S.Title>
-      <Button isFullWidth onClick={() => paymentMethod('bolbradesco')}>
+      <Button isFullWidth onClick={() => paymentType('bolbradesco')}>
         <S.Box>
           <FaBarcode size={16} />
           <h2>Boleto Bancário</h2>
         </S.Box>
         <FiChevronRight size={16} />
       </Button>
-      <Button isFullWidth onClick={() => paymentMethod('cardToken')}>
+      <Button isFullWidth onClick={() => paymentType('cardToken')}>
         <S.Box>
           <FaRegCreditCard size={16} />
           <h2>Cartão de crédito</h2>

@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { FiLock } from 'react-icons/fi';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -7,39 +8,49 @@ import Input from '../Input';
 import * as S from './styles';
 
 interface CardFormProps {
-  paymentMethod: (method: string) => void;
+  paymentType: (type: string) => void;
 }
 
 interface CardFormInputs {
-  cardNumber: string;
+  cardNumber: number;
   cardExpirationMonth: number;
   cardExpirationYear: number;
   securityCode: number;
   cardholderName: string;
   docNumber: string;
-  email: string;
+  cardholderEmail: string;
 }
 
 const schema = yup.object().shape({
-  cardNumber: yup.string().required('Caracteres de número de cartão inválidos'),
+  cardNumber: yup
+    .number()
+    .typeError('Número do cartão é obrigatório')
+    .integer()
+    .positive(),
   cardExpirationMonth: yup
-    .string()
-    .required('Mês obrigatório')
-    .matches(/^[0-9]{2}$/, 'O mês não é válido'),
+    .number()
+    .typeError('Mês obrigatório')
+    .integer()
+    .positive(),
   cardExpirationYear: yup
-    .string()
-    .required('Ano obrigatório')
-    .matches(/^[0-9]{2}$/, 'O ano não é válido'),
+    .number()
+    .typeError('Ano obrigatório')
+    .integer()
+    .positive(),
   securityCode: yup
-    .string()
-    .required('CVV obrigatório')
-    .matches(/^[0-9]{3,4}$/, 'O CVV não é válido'),
+    .number()
+    .typeError('CVV é Obrigatório')
+    .positive('Mês deve ser maior que zero'),
   cardholderName: yup.string().required('Dado obrigatório'),
   docNumber: yup.string().required('Dado obrigatório'),
-  email: yup.string().required('Dado obrigatório'),
+  cardholderEmail: yup.string().required('Dado obrigatório'),
 });
 
-const CardForm: React.FC<CardFormProps> = ({ paymentMethod }) => {
+const CardForm: React.FC<CardFormProps> = ({ paymentType }) => {
+  const MercadoPago = new window.MercadoPago(
+    import.meta.env.VITE_MP_TEST_PUBLIC_KEY
+  );
+  const [secureThumbnail, setSecureThumbnail] = useState<string>('');
   const {
     register,
     handleSubmit,
@@ -69,6 +80,19 @@ const CardForm: React.FC<CardFormProps> = ({ paymentMethod }) => {
             isFullWidth
             {...register('cardNumber')}
             error={errors.cardNumber}
+            mask="cardNumber"
+            onChange={async (el) => {
+              const { value } = el.currentTarget;
+
+              if (value.length >= 7) {
+                const bin = value.substring(0, 7).replace(/\D/g, '');
+                const { results } = await MercadoPago.getPaymentMethods({
+                  bin,
+                });
+                setSecureThumbnail(results[0].secure_thumbnail);
+              }
+            }}
+            secureThumbnail={secureThumbnail}
           />
         </S.Wide>
         <S.Fields>
@@ -78,10 +102,12 @@ const CardForm: React.FC<CardFormProps> = ({ paymentMethod }) => {
               <Input
                 id="cardExpirationMonth"
                 placeholder="MM"
+                maxLength={2}
                 data-checkout="cardExpirationMonth"
                 isFullWidth
                 {...register('cardExpirationMonth')}
                 error={errors.cardExpirationMonth}
+                mask="cardExpirationMonth"
               />
             </S.Box>
             <S.Box>
@@ -89,22 +115,26 @@ const CardForm: React.FC<CardFormProps> = ({ paymentMethod }) => {
               <Input
                 id="cardExpirationYear"
                 placeholder="AA"
+                maxLength={2}
                 data-checkout="cardExpirationYear"
                 isFullWidth
                 {...register('cardExpirationYear')}
                 error={errors.cardExpirationYear}
+                mask={'cardExpirationYear'}
               />
             </S.Box>
           </S.Flex>
           <S.Box>
-            <S.Label htmlFor="securityCode">Código de segurança</S.Label>
+            <S.Label htmlFor="securityCode">CVC/CVV</S.Label>
             <Input
               id="securityCode"
               placeholder="123"
+              maxLength={4}
               data-checkout="securityCode"
               isFullWidth
               {...register('securityCode')}
               error={errors.securityCode}
+              mask={'securityCode'}
             />
           </S.Box>
         </S.Fields>
@@ -130,21 +160,22 @@ const CardForm: React.FC<CardFormProps> = ({ paymentMethod }) => {
             isFullWidth
             {...register('docNumber')}
             error={errors.docNumber}
+            mask={'docNumber'}
           />
         </S.Wide>
         <S.Wide>
-          <S.Label htmlFor="email">E-mail</S.Label>
+          <S.Label htmlFor="cardholderEmail">E-mail</S.Label>
           <Input
             type={'email'}
-            id="email"
+            id="cardholderEmail"
             isFullWidth
             placeholder="exemplo@email.com"
-            {...register('email')}
-            error={errors.email}
+            {...register('cardholderEmail')}
+            error={errors.cardholderEmail}
           />
         </S.Wide>
         <S.ChangePaymentMethod>
-          <Button isFullWidth onClick={() => paymentMethod('payment-method')}>
+          <Button isFullWidth onClick={() => paymentType('payment-method')}>
             <span>Alterar forma de pagamento</span>
           </Button>
         </S.ChangePaymentMethod>

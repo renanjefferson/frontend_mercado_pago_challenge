@@ -2,16 +2,16 @@ import Button from '../Button';
 import * as S from './styles';
 
 interface BarCodeFormProps {
-  paymentMethod: (method: string) => void;
+  paymentType: (type: string) => void;
 }
 
-const BarCodeForm: React.FC<BarCodeFormProps> = ({ paymentMethod }) => {
+const BarCodeForm: React.FC<BarCodeFormProps> = ({ paymentType }) => {
   return (
     <S.Container>
       <S.Title>Boleto bancário</S.Title>
 
       <S.ChangePaymentMethod>
-        <Button isFullWidth onClick={() => paymentMethod('payment-method')}>
+        <Button isFullWidth onClick={() => paymentType('payment-method')}>
           <span>Alterar forma de pagamento</span>
         </Button>
       </S.ChangePaymentMethod>

@@ -1,14 +1,14 @@
-import CardForm from '../../components/CardForm';
 import { useState } from 'react';
+import BarCodeForm from '../../components/BarCodeForm';
+import CardForm from '../../components/CardForm';
 import Payment from '../../components/Payment';
 import * as S from './styles';
-import BarCodeForm from '../../components/BarCodeForm';
 
 const Checkout: React.FC = () => {
-  const [paymentMethod, setPaymentMethod] = useState<string>('payment-method');
+  const [paymentType, setPaymentType] = useState<string>('payment-method');
 
-  const selectPaymentMethod = (type: string) => {
-    setPaymentMethod(type);
+  const selectPaymentType = (type: string) => {
+    setPaymentType(type);
   };
 
   return (
@@ -16,14 +16,14 @@ const Checkout: React.FC = () => {
       <S.Content>
         <S.Title>Meios de pagamento</S.Title>
 
-        {paymentMethod === 'payment-method' && (
-          <Payment paymentMethod={selectPaymentMethod} />
+        {paymentType === 'payment-method' && (
+          <Payment paymentType={selectPaymentType} />
         )}
-        {paymentMethod === 'cardToken' && (
-          <CardForm paymentMethod={selectPaymentMethod} />
+        {paymentType === 'cardToken' && (
+          <CardForm paymentType={selectPaymentType} />
         )}
-        {paymentMethod === 'bolbradesco' && (
-          <BarCodeForm paymentMethod={selectPaymentMethod} />
+        {paymentType === 'bolbradesco' && (
+          <BarCodeForm paymentType={selectPaymentType} />
         )}
       </S.Content>
     </S.Container>
