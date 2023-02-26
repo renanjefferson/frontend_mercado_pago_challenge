@@ -3,13 +3,13 @@ import { FiLock } from 'react-icons/fi';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import axios from 'axios';
 import Button from '../Button';
 import Input from '../Input';
-import { CreditCardForm } from '../../types/Forms';
+import { ICreditCardForm } from '../../types/Forms';
 import { PaymentSubmit } from '../../types/Payment';
 import * as S from './styles';
-interface CardFormProps {
+
+interface CreditCardFormProps {
   paymentType: (type: string) => void;
 }
 
@@ -23,7 +23,7 @@ const schema = yup.object().shape({
   cardholderEmail: yup.string().required('Dado obrigatório'),
 });
 
-const CardForm: React.FC<CardFormProps> = ({ paymentType }) => {
+const CreditCardForm: React.FC<CreditCardFormProps> = ({ paymentType }) => {
   //@ts-ignore
   const MP = new window.MercadoPago(import.meta.env.VITE_MP_TEST_PUBLIC_KEY, {
     locale: 'pt-BR',
@@ -34,16 +34,15 @@ const CardForm: React.FC<CardFormProps> = ({ paymentType }) => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<CreditCardForm>({
+  } = useForm<ICreditCardForm>({
     resolver: yupResolver(schema),
   });
 
-  const paymentSubmit: PaymentSubmit = async (data) => {
-    const response = await axios.post('http://localhost:5000/', data);
-    return response.data;
-  };
+  // const paymentSubmit: PaymentSubmit = async (data) => {
+  //   console.log(data)
+  // };
 
-  const onSubmit: SubmitHandler<CreditCardForm> = async (data) => {
+  const onSubmit: SubmitHandler<ICreditCardForm> = async (data) => {
     try {
       await MP.createCardToken(
         {
@@ -60,32 +59,31 @@ const CardForm: React.FC<CardFormProps> = ({ paymentType }) => {
         },
         (status: number, response: any) => {
           if (status === 200 || status === 201) {
-            paymentSubmit({
-              token: response.id,
-              payment_method_id: paymentMethodId,
-              transaction_amount: 3200,
-              description: 'Apple Watch Series 8 GPS',
-              installments: 1,
-              email: data.cardholderEmail,
-            })
-              .then((data: any) => {
-                const { status } = data;
-
-                if (status === 200) {
-                  // toast.success('Compra realizada com sucesso!')
-                  console.log('Compra realizada com sucesso!');
-                } else {
-                  //toast.error('Erro interno do servidor!')
-                  console.log('Erro interno do servidor!');
-                }
-              })
-              .catch(() => {
-                //toast.error('Erro ao iniciar a compra!')
-                console.log('Erro ao inicar a compra!');
-              })
-              .finally(function () {
-                MP.clearSession();
-              });
+            // paymentSubmit({
+            //   token: response.id,
+            //   payment_method_id: paymentMethodId,
+            //   transaction_amount: 3200,
+            //   description: 'Apple Watch Series 8 GPS',
+            //   installments: 1,
+            //   email: data.cardholderEmail,
+            // })
+            //   .then((data: any) => {
+            //     const { status } = data;
+            //     if (status === 200) {
+            //       // toast.success('Compra realizada com sucesso!')
+            //       console.log('Compra realizada com sucesso!');
+            //     } else {
+            //       //toast.error('Erro interno do servidor!')
+            //       console.log('Erro interno do servidor!');
+            //     }
+            //   })
+            //   .catch(() => {
+            //     //toast.error('Erro ao iniciar a compra!')
+            //     console.log('Erro ao inicar a compra!');
+            //   })
+            //   .finally(function () {
+            //     MP.clearSession();
+            //   });
           } else if (status === 423) {
             // toast.error('Espere um momento e tente novamente.');
             console.log('Espere um momento e tente novamente.');
@@ -226,4 +224,4 @@ const CardForm: React.FC<CardFormProps> = ({ paymentType }) => {
   );
 };
 
-export default CardForm;
+export default CreditCardForm;

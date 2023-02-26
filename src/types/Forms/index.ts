@@ -1,4 +1,4 @@
-export interface CreditCardForm {
+export type ICreditCardForm = {
   cardNumber: string;
   cardExpirationMonth: string;
   cardExpirationYear: string;
@@ -6,4 +6,11 @@ export interface CreditCardForm {
   cardholderName: string;
   identificationNumber: string;
   cardholderEmail: string;
-}
+};
+
+export type IBarCodeForm = {
+  firstName: string;
+  lastName: string;
+  identificationNumber: string;
+  email: string;
+};

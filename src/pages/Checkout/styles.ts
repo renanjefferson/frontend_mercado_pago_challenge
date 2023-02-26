@@ -11,7 +11,7 @@ export const Container = styled.div`
 export const Content = styled.div`
   margin: 0 auto;
   padding: 0 1rem;
-  max-width: 550px;
+  max-width: 450px;
   width: 100%;
 `;
 
