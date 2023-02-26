@@ -6,7 +6,7 @@ import {
   maskCardExpirationMonth,
   maskCardExpirationYear,
   maskSecurityCode,
-  maskDocNumber,
+  maskIdentificationNumber,
 } from '../../utils/masks';
 import * as S from './styles';
 
@@ -18,7 +18,7 @@ export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
     | 'cardExpirationMonth'
     | 'cardExpirationYear'
     | 'securityCode'
-    | 'docNumber';
+    | 'identificationNumber';
   secureThumbnail?: string;
 }
 
@@ -45,8 +45,8 @@ const Input: React.FC<InputProps> = forwardRef<HTMLInputElement, InputProps>(
           return maskCardExpirationYear(el);
         case 'securityCode':
           return maskSecurityCode(el);
-        case 'docNumber':
-          return maskDocNumber(el);
+        case 'identificationNumber':
+          return maskIdentificationNumber(el);
         default:
           return '';
       }
@@ -65,7 +65,7 @@ const Input: React.FC<InputProps> = forwardRef<HTMLInputElement, InputProps>(
             onKeyUp={handleKeyUp}
           />
           {secureThumbnail && (
-            <img
+            <S.Card
               src={secureThumbnail}
               alt="Imagem ilustrativa da bandeira do cartão de crédito"
               aria-hidden

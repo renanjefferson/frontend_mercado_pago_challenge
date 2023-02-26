@@ -37,6 +37,8 @@ export const Input = styled.input<InputProps>`
     `}
 `;
 
+export const Card = styled.img``;
+
 export const ErrorMessage = styled.p`
   align-items: center;
   color: var(--error-color);

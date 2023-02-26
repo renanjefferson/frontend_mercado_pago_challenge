@@ -19,7 +19,7 @@ export function maskCardExpirationMonth(e: React.FormEvent<HTMLInputElement>) {
 
 export function maskCardExpirationYear(e: React.FormEvent<HTMLInputElement>) {
   let { value } = e.currentTarget;
-  value = value.replaceAll(/\D{0,2}/g, '');
+  value = value.replaceAll(/\D{0,4}/g, '');
   e.currentTarget.value = value;
 }
 
@@ -29,7 +29,7 @@ export function maskSecurityCode(e: React.FormEvent<HTMLInputElement>) {
   e.currentTarget.value = value;
 }
 
-export function maskDocNumber(e: React.FormEvent<HTMLInputElement>) {
+export function maskIdentificationNumber(e: React.FormEvent<HTMLInputElement>) {
   let { value } = e.currentTarget;
   value = value
     .replace(/\D/g, '')
