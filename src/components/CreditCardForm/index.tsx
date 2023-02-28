@@ -1,13 +1,16 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { FiLock } from 'react-icons/fi';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
+import { toast } from 'react-toastify';
 import Button from '../Button';
 import Input from '../Input';
 import { ICreditCardForm } from '../../types/Forms';
-import { PaymentSubmit } from '../../types/Payment';
+import { IPaymentSubmit } from '../../types/Payment';
 import * as S from './styles';
+import api from '../../services/api';
 
 interface CreditCardFormProps {
   paymentType: (type: string) => void;
@@ -30,71 +33,75 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({ paymentType }) => {
   });
   const [secureThumbnail, setSecureThumbnail] = useState<string>('');
   const [paymentMethodId, setPaymentMethodId] = useState<string>('');
+  const [issuerId, setIssuerId] = useState<number>(0);
+  const navigate = useNavigate();
+
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<ICreditCardForm>({
     resolver: yupResolver(schema),
   });
 
-  // const paymentSubmit: PaymentSubmit = async (data) => {
-  //   console.log(data)
-  // };
+  const paymentSubmit: IPaymentSubmit = async (data) => {
+    const response = await api.post('/payments/card', data);
+    return response;
+  };
 
   const onSubmit: SubmitHandler<ICreditCardForm> = async (data) => {
     try {
-      await MP.createCardToken(
-        {
-          cardNumber: data.cardNumber.replace(/\D/g, ''),
-          cardholderName: data.cardholderName,
-          cardExpirationMonth: data.cardExpirationMonth,
-          cardExpirationYear: data.cardExpirationYear,
-          securityCode: data.securityCode,
-          identificationType: 'CPF',
-          identificationNumber: data.identificationNumber.replace(
-            /[^a-zA-Z0-9]/g,
-            ''
-          ),
+      const cardToken = await MP.createCardToken({
+        cardNumber: data.cardNumber.replace(/\D/g, ''),
+        cardholderName: data.cardholderName,
+        cardExpirationMonth: data.cardExpirationMonth,
+        cardExpirationYear: data.cardExpirationYear,
+        securityCode: data.securityCode,
+        identificationType: 'CPF',
+        identificationNumber: data.identificationNumber.replace(
+          /[^a-zA-Z0-9]/g,
+          ''
+        ),
+      });
+
+      paymentSubmit({
+        transaction_amount: 3200,
+        token: cardToken.id,
+        description: 'Apple Watch Series 8 GPS',
+        installments: 1,
+        payment_method_id: paymentMethodId,
+        issuer_id: issuerId,
+        payer: {
+          email: data.cardholderEmail,
+          identification: {
+            type: 'CPF',
+            number: data.identificationNumber.replace(/[^a-zA-Z0-9]/g, ''),
+          },
         },
-        (status: number, response: any) => {
+      })
+        .then((transaction) => {
+          const { status, data } = transaction;
           if (status === 200 || status === 201) {
-            // paymentSubmit({
-            //   token: response.id,
-            //   payment_method_id: paymentMethodId,
-            //   transaction_amount: 3200,
-            //   description: 'Apple Watch Series 8 GPS',
-            //   installments: 1,
-            //   email: data.cardholderEmail,
-            // })
-            //   .then((data: any) => {
-            //     const { status } = data;
-            //     if (status === 200) {
-            //       // toast.success('Compra realizada com sucesso!')
-            //       console.log('Compra realizada com sucesso!');
-            //     } else {
-            //       //toast.error('Erro interno do servidor!')
-            //       console.log('Erro interno do servidor!');
-            //     }
-            //   })
-            //   .catch(() => {
-            //     //toast.error('Erro ao iniciar a compra!')
-            //     console.log('Erro ao inicar a compra!');
-            //   })
-            //   .finally(function () {
-            //     MP.clearSession();
-            //   });
-          } else if (status === 423) {
-            // toast.error('Espere um momento e tente novamente.');
-            console.log('Espere um momento e tente novamente.');
+            toast.success(`Compra realizada com sucesso!`, {
+              role: 'alert',
+            });
+
+            navigate(`/payment/success/${data.id}`);
           } else {
-            //toast.error('Certifique-se que todos os dados estão corretos!');
-            console.log('Certifique-se que todos os dados estão corretos!');
+            toast.error('Erro interno do servidor!', {
+              role: 'alert',
+            });
           }
-        }
-      );
+        })
+        .catch(() => {
+          toast.error('Erro ao iniciar a compra!', {
+            role: 'alert',
+          });
+        });
     } catch (error) {
-      console.log(error);
+      toast.error('Certifique-se que todos os dados estão corretos!', {
+        role: 'alert',
+      });
     }
   };
 
@@ -121,6 +128,7 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({ paymentType }) => {
                 const { results } = await MP.getPaymentMethods({
                   bin,
                 });
+                setIssuerId(results[0].issuer.id);
                 setPaymentMethodId(results[0].id);
                 setSecureThumbnail(results[0].secure_thumbnail);
               }
@@ -214,9 +222,15 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({ paymentType }) => {
             <span>Alterar forma de pagamento</span>
           </Button>
         </S.ChangePaymentMethod>
-        <Button isFullWidth type="submit">
-          <FiLock />
-          <span>Pagar R$3.200</span>
+        <Button isFullWidth type="submit" disabled={isSubmitting}>
+          {isSubmitting ? (
+            <span>Processando pagamento...</span>
+          ) : (
+            <>
+              <FiLock />
+              <span>Pagar R$3.200</span>
+            </>
+          )}
         </Button>
         <input id="paymentMethodId" type="hidden" value={paymentMethodId} />
       </S.Form>

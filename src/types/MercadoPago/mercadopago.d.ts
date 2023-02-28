@@ -1,7 +1,7 @@
-import MercadoPago from './index';
+import IMercadoPago from './index';
 
 declare global {
   interface Window {
-    MercadoPago: MercadoPago;
+    MercadoPago: IMercadoPago;
   }
 }
