@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { FiShoppingBag, FiCheck } from 'react-icons/fi';
 import { FaRegCreditCard } from 'react-icons/fa';
 import axios from 'axios';
@@ -13,6 +13,8 @@ interface ITransaction {
   email: string;
   total_paid_amount?: number;
   last_four_digits?: string | null;
+  external_resource_url?: string | null;
+  barcode?: string | null;
 }
 // TODO: Melhorar layout dessa página
 const Success: React.FC = () => {
@@ -45,6 +47,8 @@ const Success: React.FC = () => {
         email: data.payer.email,
         total_paid_amount: data.transaction_details.total_paid_amount,
         last_four_digits: data.card.last_four_digits,
+        external_resource_url: data.transaction_details.external_resource_url,
+        barcode: data.barcode.content,
       });
     })();
   }, []);
@@ -94,11 +98,26 @@ const Success: React.FC = () => {
 
             {transaction.payment_method?.type === 'ticket' && (
               <S.BoletoContainer>
-                <a href="#">imprimir boleto</a>
+                <Link
+                  to={
+                    transaction.external_resource_url
+                      ? transaction.external_resource_url
+                      : '#'
+                  }
+                  target={'_blank'}
+                >
+                  imprimir boleto
+                </Link>
                 <strong>Código de barras:</strong>
-                <p>10499.79519 54000.100013 14143.373166 7 92620000127099</p>
+                <p>{transaction.barcode && transaction.barcode}</p>
               </S.BoletoContainer>
             )}
+
+            <S.GoBack>
+              <Link to={'/'} aria-label="Voltar para o início">
+                voltar
+              </Link>
+            </S.GoBack>
           </S.Main>
         </S.Content>
       </S.Container>

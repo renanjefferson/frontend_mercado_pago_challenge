@@ -117,3 +117,12 @@ export const Icon = styled.div`
 export const Info = styled.div`
   text-align: left;
 `;
+
+export const GoBack = styled.div`
+  margin: 1rem 0;
+  & a {
+    color: var(--primary-color);
+    font-size: 1rem;
+    font-weight: var(--font-weight-bold);
+  }
+`;

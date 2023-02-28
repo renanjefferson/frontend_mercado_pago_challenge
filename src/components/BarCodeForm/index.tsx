@@ -1,10 +1,14 @@
+import { useNavigate } from 'react-router-dom';
 import { FiLock } from 'react-icons/fi';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
+import { toast } from 'react-toastify';
 import Button from '../Button';
 import Input from '../Input';
+import api from '../../services/api';
 import { IBarCodeForm } from '../../types/Forms';
+import { IBarCodePayment } from '../../types/Payments';
 import * as S from './styles';
 interface IBarCodeFormProps {
   paymentType: (type: string) => void;
@@ -18,6 +22,8 @@ const schema = yup.object().shape({
 });
 
 const BarCodeForm: React.FC<IBarCodeFormProps> = ({ paymentType }) => {
+  const navigate = useNavigate();
+
   const {
     register,
     handleSubmit,
@@ -26,26 +32,51 @@ const BarCodeForm: React.FC<IBarCodeFormProps> = ({ paymentType }) => {
     resolver: yupResolver(schema),
   });
 
+  const paymentSubmit: IBarCodePayment = async (data) => {
+    const response = await api.post('/payments/barcode', data);
+    return response;
+  };
+
   const onSubmit: SubmitHandler<IBarCodeForm> = async (data) => {
-    // TODO - Type Request
-    // {
-    //   transaction_amount: 3200,
-    //   description: 'Apple Watch Series 8 GPS',
-    //   payment_method_id: 'bolbradesco',
-    //   payer: {
-    //     email: data.email,
-    //     first_name: data.firstName,
-    //     last_name: data.lastName,
-    //     identification: {
-    //       type: 'CPF',
-    //       number: data.identificationNumber,
-    //     },
-    //   }
-    // }
     try {
-      console.log(data);
+      paymentSubmit({
+        transaction_amount: 3200,
+        description: 'Apple Watch Series 8 GPS',
+        installments: 1,
+        payment_method_id: 'bolbradesco',
+        payer: {
+          email: data.email,
+          first_name: data.firstName,
+          last_name: data.lastName,
+          identification: {
+            type: 'CPF',
+            number: data.identificationNumber.replace(/[^a-zA-Z0-9]/g, ''),
+          },
+        },
+      })
+        .then((transaction) => {
+          const { status, data } = transaction;
+          if (status === 200 || status === 201) {
+            toast.success(`Compra realizada com sucesso!`, {
+              role: 'alert',
+            });
+
+            navigate(`/payment/success/${data.id}`);
+          } else {
+            toast.error('Erro interno do servidor!', {
+              role: 'alert',
+            });
+          }
+        })
+        .catch(() => {
+          toast.error('Erro ao iniciar a compra!', {
+            role: 'alert',
+          });
+        });
     } catch (error) {
-      console.log(error);
+      toast.error('Certifique-se que todos os dados estão corretos!', {
+        role: 'alert',
+      });
     }
   };
 

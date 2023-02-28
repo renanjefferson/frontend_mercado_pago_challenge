@@ -7,10 +7,10 @@ import * as yup from 'yup';
 import { toast } from 'react-toastify';
 import Button from '../Button';
 import Input from '../Input';
-import { ICreditCardForm } from '../../types/Forms';
-import { IPaymentSubmit } from '../../types/Payment';
-import * as S from './styles';
 import api from '../../services/api';
+import { ICreditCardForm } from '../../types/Forms';
+import { ICreditCardPayment } from '../../types/Payments';
+import * as S from './styles';
 
 interface CreditCardFormProps {
   paymentType: (type: string) => void;
@@ -44,7 +44,7 @@ const CreditCardForm: React.FC<CreditCardFormProps> = ({ paymentType }) => {
     resolver: yupResolver(schema),
   });
 
-  const paymentSubmit: IPaymentSubmit = async (data) => {
+  const paymentSubmit: ICreditCardPayment = async (data) => {
     const response = await api.post('/payments/card', data);
     return response;
   };
