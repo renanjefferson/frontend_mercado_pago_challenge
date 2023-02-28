@@ -23,7 +23,6 @@ const Success: React.FC = () => {
   const [transaction, setTransaction] = useState<ITransaction>(
     {} as ITransaction
   );
-
   useEffect(() => {
     // TODO: Buscar transação salva no backend
     (async () => {
@@ -46,9 +45,9 @@ const Success: React.FC = () => {
         },
         email: data.payer.email,
         total_paid_amount: data.transaction_details.total_paid_amount,
-        last_four_digits: data.card.last_four_digits,
-        external_resource_url: data.transaction_details.external_resource_url,
-        barcode: data.barcode.content,
+        last_four_digits: data.card?.last_four_digits,
+        external_resource_url: data.transaction_details?.external_resource_url,
+        barcode: data.barcode?.content,
       });
     })();
   }, []);

@@ -27,7 +27,7 @@ const BarCodeForm: React.FC<IBarCodeFormProps> = ({ paymentType }) => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<IBarCodeForm>({
     resolver: yupResolver(schema),
   });
@@ -134,9 +134,15 @@ const BarCodeForm: React.FC<IBarCodeFormProps> = ({ paymentType }) => {
             <span>Alterar forma de pagamento</span>
           </Button>
         </S.ChangePaymentMethod>
-        <Button isFullWidth type="submit">
-          <FiLock />
-          <span>Pagar R$3.200</span>
+        <Button isFullWidth type="submit" disabled={isSubmitting}>
+          {isSubmitting ? (
+            <span>Gerando boleto...</span>
+          ) : (
+            <>
+              <FiLock />
+              <span>Pagar R$3.200</span>
+            </>
+          )}
         </Button>
       </S.Form>
     </S.Container>
