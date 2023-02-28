@@ -3,7 +3,7 @@
 ![Index](https://user-images.githubusercontent.com/5558195/221766054-96d16592-f132-4174-ba90-8e37d940781a.png)
 
 ## Sobre o projeto
-Este projeto é uma aplicação Front-end, que consiste em integrar com Mercado Pago e criar pagamentos com cartão de crédito e Boleto Bancário.
+Este projeto é uma aplicação Front-end, que consiste em integrar com Mercado Pago e criar pagamentos com Cartão de Crédito e Boleto Bancário.
 
 
 ## 💻 Tecnologias / Ferramentas:
@@ -37,29 +37,30 @@ git clone https://github.com/renanjefferson/frontend_mercado_pago_challenge.git
 ```
 <br/>
 
-- Entre no diretório frontend_mercado_pago_challenge e abra o projeto no VSCode
+- Entre no diretório `frontend_mercado_pago_challenge` e abra o projeto no VSCode
 - Digite: yarn install ou npm install (dependendo do gerenciador acima escolhido)
-- Crie e configure o arquivo '.env' na raíz do projeto com a Public Key e Access Token da forma como está no arquivo '.env.example'
- ```
+- Crie e configure o arquivo '.env' na raíz do projeto com a `VITE_MP_TEST_PUBLIC_KEY` e `VITE_MP_TEST_ACCESS_TOKEN` da forma como está no arquivo '.env.example'
+ ```bash
  VITE_MP_TEST_PUBLIC_KEY=<SUA_CHAVE_PUBLICA>
  ```
- ```
+ ```bash
  VITE_MP_TEST_ACCESS_TOKEN=<SEU_TOKEN_DE_ACESSO>
  ```
  
  
 **Rodar a aplicação**
-```
+```bash
 yarn dev
 ```
 ou
-```
+```bash
 npm run dev
 ```
 
 
 **Local**
-```
-http://127.0.0.1:5173/
-```
+
+Acesse [http://127.0.0.1:5173](http://127.0.0.1:5173) em seu navegador.
+
+
 
